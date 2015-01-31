@@ -1,0 +1,61 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.io/2.2/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/2.2/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+
+	<title>Firebase and Webix Datatable - syncing with firebase</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+	//datatable
+	var table = {
+		view:"datatable",
+		id:"dtable", select:true, multiselect:true,
+		editable:true, editaction:"dblclick",
+		columns:[{
+			id:"name", editor:"text", fillspace:1
+		},{
+			id:"author", editor:"text", fillspace:1
+		}]
+	};
+
+	var toolbar = {
+		view:"toolbar",
+		elements:[
+			{ view:"label", label:"Dbl-Click to edit any row"},
+			{ view:"button", value:"Add", width:100, click:function(){
+				var row = $$("dtable").add({ name:"", author:"" });
+				$$("dtable").editCell(row, "name")
+			}},
+			{ view:"button", value:"Remove", width:100, click:function(){
+				var id = $$("dtable").getSelectedId();
+				if (id)
+					$$("dtable").remove(id);
+				else
+					webix.message("Please select any row first");
+			}}
+		]
+	}
+	webix.ui({
+		rows:[toolbar, table]
+	});
+
+
+	//use firebase api to obtain reference
+	var fb  = new Firebase("https://webix-demo.firebaseio.com/");
+	var ref = fb.child("books");
+	
+	//syncing datatable with firebase
+	$$("dtable").sync(ref);
+
+
+	</script>
+</body>
+</html>

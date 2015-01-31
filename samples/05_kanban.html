@@ -1,0 +1,45 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.io/2.2/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/2.2/webix.css">
+	<script type="text/javascript" src="http://cdn.webix.io/site/kanban/kanban.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/site/kanban/kanban.css">
+
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+
+	<title>Firebase and Webix Datatable - syncing with firebase</title>
+</head>
+<body>
+	<script type="text/javascript">
+	//use firebase api to obtain reference
+	var fb  = new Firebase("https://webix-demo.firebaseio.com/");
+	var ref = fb.child("tasks");
+	var proxy = webix.proxy("firebase", ref)
+
+
+	webix.ui({
+		view:"kanban", type:"space",
+		cols:[
+			{ header:"Backlog",
+				body:{ view:"kanbanlist", status:"new", type: "avatars" }},
+			{ header:"In Progress",
+				body:{ view:"kanbanlist", status:"work", type: "avatars"}
+			},
+			{ header:"Testing",
+				body:{ view:"kanbanlist", status:"test", type: "avatars" }},
+			{ header:"Done",
+				body:{ view:"kanbanlist", status:"done", type: "avatars" }}
+		],
+		url:proxy,
+		save:proxy
+	});
+
+
+	</script>
+</body>
+</html>

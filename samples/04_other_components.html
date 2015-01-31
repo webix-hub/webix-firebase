@@ -1,0 +1,103 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.io/2.2/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/2.2/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+
+	<title>Firebase and Webix Datatable - syncing with firebase</title>
+</head>
+<body>
+	<script type="text/javascript">
+	//use firebase api to obtain reference
+	var fb  = new Firebase("https://webix-demo.firebaseio.com/");
+	var ref = fb.child("books");
+	var proxy = webix.proxy("firebase", ref)
+
+	//datatable
+	var table = {
+		view:"datatable",
+		id:"dtable", select:true, multiselect:true,
+		editable:true, editaction:"dblclick",
+		columns:[{
+			id:"name", editor:"text", fillspace:1
+		},{
+			id:"author", editor:"text", fillspace:1
+		}],
+		url:proxy,
+		save:proxy
+	};
+
+	var submenu = webix.ui({
+		view:"submenu",
+		id:"books_menu",
+		layout:"y",
+		template:"#name#",
+		url:proxy
+	});
+
+	var menu = {
+		view:"toolbar",
+		elements:[{
+			view:"menu", 
+			data:[
+				{ value:"Books", submenu: submenu }
+			]
+		}]
+	};
+
+	var list = {
+		view:"list", 
+		width:320, scroll:false, select:true,
+		template:"'#name#'' by #author#",
+		url:proxy
+	};
+
+	var form = {
+		view:"form",
+		elements:[
+			{ view:"richselect", options:{ body:{ url: proxy, template:"#author#" } } }
+		]
+	};
+
+	var toolbar = {
+		view:"toolbar",
+		elements:[
+			{ view:"label", label:"Dbl-Click to edit any row"},
+			{ view:"button", value:"Add", width:100, click:function(){
+				var row = $$("dtable").add({ name:"", author:"" });
+				$$("dtable").editCell(row, "name")
+			}},
+			{ view:"button", value:"Remove", width:100, click:function(){
+				var id = $$("dtable").getSelectedId();
+				if (id)
+					$$("dtable").remove(id);
+				else
+					webix.message("Please select any row first");
+			}}
+		]
+	};
+
+	webix.ui({
+		rows:[
+			menu,
+			{ cols:[ 
+				list, 
+				{ rows:[ 
+					toolbar, 
+					form, 
+					table
+				]}
+			]}
+		]
+	});
+
+
+
+	</script>
+</body>
+</html>
