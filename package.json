@@ -1,0 +1,23 @@
+{
+  "name": "webix-firebase",
+  "version": "0.1.0",
+  "description": "Firebase adapter for Webix UI",
+  "directories": {
+  },
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/webix-hub/webix-firebase.git"
+  },
+  "author": "Maksim Kozhukh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webix-hub/webix-firebase/issues"
+  },
+  "homepage": "http://webix.com",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
