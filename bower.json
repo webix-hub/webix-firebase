@@ -1,0 +1,22 @@
+{
+  "name": "webix-firebase",
+  "version": "0.1.0",
+  "homepage": "https://github.com/webix-hub/webix-firebase",
+  "authors": [
+    "Maksim Kozhukh <mkozhukh@ya.ru>"
+  ],
+  "description": "Firebase adapter for Webix UI",
+  "main": "codebase/webix-firebase.js",
+  "keywords": [
+    "webix",
+    "firebase"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
