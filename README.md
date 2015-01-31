@@ -3,11 +3,11 @@ Firebase adapter for Webix UI
 
 Library allows to use [Webix](http://webix.com) components with [FireBase](https://firebase.com/)
 
-Citing the Firebase site
+Citing the Firebase site:
 
-	When data changes, apps built with Firebase update instantly across every device -- web or mobile.
+When data changes, apps built with Firebase update instantly across every device -- web or mobile.
 
-	Firebase-powered apps work offline. Data is synchronized instantly when your app regains connectivity.
+Firebase-powered apps work offline. Data is synchronized instantly when your app regains connectivity.
 
 
 How to use
