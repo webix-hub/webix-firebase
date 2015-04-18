@@ -1,7 +1,7 @@
 Firebase adapter for Webix UI
 =============================
 
-Library allows to use [Webix](http://webix.com) components with [FireBase](https://firebase.com/)
+Library allows using [Webix](http://webix.com) components with [FireBase](https://firebase.com/)
 
 Citing the Firebase site:
 
@@ -96,7 +96,7 @@ $$("dtable").load( webix.proxy("firebase", ref);
 
 ### Sync api
 
-Webix components has native [sync](http://docs.webix.com/api__link__ui.proto_sync.html) api to [sync data between components](http://docs.webix.com/desktop__data_binding.html). The same api can be used with firebase
+Webix components have native [sync](http://docs.webix.com/api__link__ui.proto_sync.html) api to [sync data between components](http://docs.webix.com/desktop__data_binding.html). The same api can be used with firebase
 
 ```
 var fb = new Firebase("https://webix-demo.firebaseio.com/");
