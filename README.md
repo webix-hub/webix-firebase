@@ -98,7 +98,7 @@ $$("dtable").load( webix.proxy("firebase", ref);
 
 Webix components have native [sync](http://docs.webix.com/api__link__ui.proto_sync.html) api to [sync data between components](http://docs.webix.com/desktop__data_binding.html). The same api can be used with firebase
 
-```
+```js
 var fb = new Firebase("https://webix-demo.firebaseio.com/");
 var ref = fb.child("books");
 
