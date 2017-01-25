@@ -1,7 +1,7 @@
 Firebase adapter for Webix UI
 =============================
 
-Library allows using [Webix](http://webix.com) components with [FireBase](https://firebase.com/)
+Library allows using [Webix](http://webix.com) components with [FireBase](https://firebase.google.com/)
 
 Citing the Firebase site:
 
@@ -17,18 +17,26 @@ Include Webix and Firebase files on the page
 
 ```html
 <!-- Webix -->
-<script type="text/javascript" src="http://cdn.webix.io/2.2/webix.js"></script>
-<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/2.2/webix.css">
+<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
 <!-- Webix-Firebase adapter -->
 <script type="text/javascript" src="../codebase/webix-firebase.js"></script>
 <!-- FireBase -->
-<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+
 ```
 
 Create main firebase connection
 
 ```js
-webix.firebase = new Firebase("https://webix-demo.firebaseio.com/");
+firebase.initializeApp({
+  databaseURL: "https://webix-demo.firebaseio.com/"
+});
+
+//create firebase connection, and assign it to webix
+webix.firebase = firebase.database();
 ```
 
 Init webix component, using "firebase->{reference}" as data url
@@ -64,17 +72,18 @@ Adding "save" property ensures that all changes in the datatable will be saved t
 Instead of using text url you can use firebase references directly 
 
 ```js
-var fb = new Firebase("https://webix-demo.firebaseio.com/");
-var ref = fb.child("books");
+firebase.initializeApp({
+	databaseURL: "https://webix-demo.firebaseio.com/"
+});
+var db = firebase.database();
+var proxy = webix.proxy("firebase", db.ref("books"));
 
 webix.ui({
 	view:"list",
-	url: webix.proxy("firebase", ref),
-	save: webix.proxy("firebase", ref)
+	url: proxy,
+	save: proxy
 }
-```	
-
-
+```
 
 
 ### Dynamic data loading
@@ -99,8 +108,11 @@ $$("dtable").load( webix.proxy("firebase", ref);
 Webix components have native [sync](http://docs.webix.com/api__link__ui.proto_sync.html) api to [sync data between components](http://docs.webix.com/desktop__data_binding.html). The same api can be used with firebase
 
 ```js
-var fb = new Firebase("https://webix-demo.firebaseio.com/");
-var ref = fb.child("books");
+firebase.initializeApp({
+	databaseURL: "https://webix-demo.firebaseio.com/"
+});
+webix.firebase = firebase.database();
+var ref = webix.firebase.ref("books");
 
 $$("dtable").sync(ref);
 ```
