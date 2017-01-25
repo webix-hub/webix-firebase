@@ -17,7 +17,7 @@ webix.proxy.firebase = {
 		if (typeof this.source == "object")
 			this.collection = this.source;
 		else
-			this.collection = this.collection || webix.firebase.child(this.source);
+			this.collection = this.collection || webix.firebase.ref(this.source);
 
 		//full data loading - do only once, during first loading
 		this.collection.once("value", function(data){
@@ -39,7 +39,7 @@ webix.proxy.firebase = {
 			if (view.firebase_saving) return;
 
 			var obj = data.val();
-			obj.id = data.key();
+			obj.id = data.key;
 
 			//do not trigger data saving events
 			webix.dp(view).ignore(function(){
@@ -56,7 +56,7 @@ webix.proxy.firebase = {
 			if (view.firebase_saving) return;
 
 			var obj = data.val();
-			obj.id = data.key();
+			obj.id = data.key;
 
 			//do not trigger data saving events
 			webix.dp(view).ignore(function(){
@@ -71,7 +71,7 @@ webix.proxy.firebase = {
 
 			//do not trigger data saving events
 			webix.dp(view).ignore(function(){
-				view.remove(data.key());
+				view.remove(data.key);
 			});
 		});
 
@@ -84,7 +84,7 @@ webix.proxy.firebase = {
 		if (typeof this.source == "object")
 			this.collection = this.source;
 		else
-			this.collection = this.collection || webix.firebase.child(this.source);
+			this.collection = this.collection || webix.firebase.ref(this.source);
 
 		//flag to prevent triggering of onchange listeners on the same component
 		view.firebase_saving = true;
@@ -106,7 +106,7 @@ webix.proxy.firebase = {
 					callback.error("", null, error);
 				else
 					callback.success("", { newid: id }, -1);
-			}).key();
+			}).key;
 			
 		} else if (obj.operation == "delete"){
 			//data removed
@@ -129,7 +129,8 @@ webix.proxy.firebase = {
 */
 
 webix.attachEvent("onSyncUnknown", function(target, source){
-	if (window.Firebase && source instanceof Firebase){
+	var fb = window.firebase || webix.firebase;
+	if (fb && source instanceof fb.database.Reference){
 
 		var proxy = webix.proxy("firebase", source);
 

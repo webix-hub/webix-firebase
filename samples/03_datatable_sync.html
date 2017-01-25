@@ -1,13 +1,14 @@
 <html>
 <head>
 	<!-- Webix -->
-	<script type="text/javascript" src="http://cdn.webix.io/2.2/webix.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://cdn.webix.io/2.2/webix.css">
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
 	<!-- Webix-Firebase adapter -->
 	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
 
 	<!-- FireBase -->
-	<script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
 
 	<title>Firebase and Webix Datatable - syncing with firebase</title>
 </head>
@@ -48,10 +49,14 @@
 	});
 
 
-	//use firebase api to obtain reference
-	var fb  = new Firebase("https://webix-demo.firebaseio.com/");
-	var ref = fb.child("books");
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/"
+	});
 	
+	//create firebase connection, and assign it to webix
+	var db = firebase.database();
+	var ref = db.ref("books");
+
 	//syncing datatable with firebase
 	$$("dtable").sync(ref);
 
