@@ -139,15 +139,10 @@ webix.attachEvent("onSyncUnknown", function(target, source){
 	if (fb && source instanceof fb.database.Reference){
 
 		var proxy = webix.proxy("firebase", source);
+		target = webix.$$(target.owner);
 
-		//due to some limitations in Webix 2.2 we can't use above proxy with DataStore directly
-		//so will create intermediate data collection and use syn like
-		//firebase -> data collection -> target view
-		var data = new webix.DataCollection({
-			url:proxy,
-			save:proxy
-		});
-
-		target.sync(data);
+		target.clearAll();
+		target.load(proxy);
+		webix.dp(target).define("url", proxy);
 	}
 });
