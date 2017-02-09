@@ -1,6 +1,8 @@
 Firebase adapter for Webix UI
 =============================
 
+[![npm version](https://badge.fury.io/js/webix-firebase.svg)](https://badge.fury.io/js/webix-firebase)
+
 Library allows using [Webix](http://webix.com) components with [FireBase](https://firebase.google.com/)
 
 Citing the Firebase site:
