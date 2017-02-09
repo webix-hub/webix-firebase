@@ -20,7 +20,7 @@ webix.proxy.firebase = {
 			this.collection = this.collection || webix.firebase.ref(this.source);
 
 		//full data loading - do only once, during first loading
-		this.collection.once("value", function(data){
+		this.collection.once("value", webix.bind(function(data){
 			var source = data.val();
 			var result = [];
 			for (var key in source){
@@ -30,7 +30,11 @@ webix.proxy.firebase = {
 			}
 
 			webix.ajax.$callback(view, callback, "", result, -1);
-		});
+			this._setHandlers(view);
+
+		}, this));
+	},
+	_setHandlers:function(view){
 
 		//after initial data loading, set listeners for changes
 		//data in firebase updated
@@ -49,11 +53,12 @@ webix.proxy.firebase = {
 
 		//data in firebase added
 		this.collection.on("child_added", function(data){
-			//event can be triggered while initial data loading - ignoring
-			if (view.waitData.state == "pending") return;
-		
 			//event triggered by data saving in the same component
 			if (view.firebase_saving) return;
+
+			//we already have record with such id
+			//it seems, this event duplicates info from on:value
+			if (view.exists(data.key)) return;
 
 			var obj = data.val();
 			obj.id = data.key;
@@ -74,10 +79,11 @@ webix.proxy.firebase = {
 				view.remove(data.key);
 			});
 		});
-
 	},
 	/*
 	save:"firebase->ref"
+	or
+	webix.dp(view).define("url", "firebase->ref");
 	*/
 	save:function(view, obj, dp, callback){
 		//decode string reference if necessary
