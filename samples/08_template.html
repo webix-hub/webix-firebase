@@ -1,0 +1,61 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+	<title>Firebase and Webix Template - syncing with firebase</title>
+</head>
+<body>
+	<script type="text/javascript">
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/"
+	});
+	
+	//create firebase connection, and assign it to webix
+	var db = webix.firebase = firebase.database();
+	
+	var form1 = {
+		rows:[
+			{ type:"header", template:"Standalone form" },
+			{
+				view:"form", id:"f1",
+				elements:[
+					{ view:"text", name:"name" },
+					{ view:"text", name:"author" },
+					{ view:"button", value:"Save", click:function(){
+						this.getFormView().save();
+					}}
+				]
+			}
+		]
+	};
+
+	var template = {
+		view:"template", id:"t1",
+		template:(obj) => obj.name?`<p>Name: ${obj.name}</p><p>Author: ${obj.author}</p>`:""
+	};
+
+
+	webix.ui({
+		cols:[
+			form1,
+			template
+		]
+	});
+
+
+	//direct data loading
+	$$("f1").load("firebase->books3/1");
+	$$("t1").load("firebase->books3/1");
+
+
+	</script>
+</body>
+</html>

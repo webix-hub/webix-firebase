@@ -1,0 +1,82 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+	<title>Firebase and Webix Form - syncing with firebase</title>
+</head>
+<body>
+	<script type="text/javascript">
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/"
+	});
+	
+	//create firebase connection, and assign it to webix
+	var db = webix.firebase = firebase.database();
+	
+	var form1 = {
+		rows:[
+			{ type:"header", template:"Standalone form" },
+			{
+				view:"form", id:"f1",
+				elements:[
+					{ view:"text", name:"name" },
+					{ view:"text", name:"author" },
+					{ view:"button", value:"Save", click:function(){
+						this.getFormView().save();
+					}}
+				]
+			}
+		]
+	};
+
+	var form2 = {
+		rows:[
+			{ type:"header", template:"Linked form" },
+			{
+				view:"form", id:"f2",
+				elements:[
+					{ view:"text", name:"name" },
+					{ view:"text", name:"author" },
+					{ view:"button", value:"Save", click:function(){
+						this.getFormView().save();
+					}}
+				]
+			}
+		]
+	}
+
+
+	webix.ui({
+		cols:[
+			form1,
+			form2
+		]
+	});
+
+
+	//direct data loading
+	$$("f1").load("firebase->books3/1");
+
+
+	//load data through collection
+	//it can be a DataCollection or any data component - grid, list, etc. 
+	var store = new webix.DataCollection({ url:"firebase->books3", save:"firebase->books3" });
+	//use setCursor to select some record in dataset
+	store.waitData.then(function(){
+		store.setCursor("1");
+	})
+	//link form to data collection
+	$$("f2").bind(store);
+
+
+	</script>
+</body>
+</html>

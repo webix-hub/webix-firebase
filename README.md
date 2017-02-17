@@ -119,6 +119,46 @@ var ref = webix.firebase.ref("books");
 $$("dtable").sync(ref);
 ```
 
+### Working with Forms and Templates
+
+
+Similar to data views, you can use "load" and "save" API while working with Forms
+
+```js
+//form
+$$("form").load("books/4");
+...
+$$("form").save();
+
+//template
+$$("template").load("books/4")
+```
+
+In some cases, it has sense to not load data correctly but bind form ( template ) to some other view or data collection
+
+```js
+var data = new webix.DataCollection({
+	url:"firebase->books",
+	save:"firebase->books"
+})
+form.bind(data);
+data.waitData.then(function(){
+	//you need to use setCursor API to load some record from collection into a form
+	data.setCursor("4");
+})
+```
+
+or, the same for the datatable
+
+```js
+webix.ui({
+	view:"datatable", autoConfig:true, id:"d1", select:true,
+	url:"firebase->books",
+	save:"firebase->books"
+});
+form.bind("d1"); //selected row will be shown in a form
+```
+
 Samples
 -----------
 

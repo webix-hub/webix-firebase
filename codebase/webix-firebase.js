@@ -22,35 +22,64 @@ webix.proxy.firebase = {
 		//full data loading - do only once, during first loading
 		this.collection.once("value", webix.bind(function(data){
 			var source = data.val();
-			var result = [];
-			for (var key in source){
-				var record = source[key];
-				record.id = key;
-				result.push(record);
+			var isCollection = !!view.exists;
+
+			if (isCollection){
+				var result = [];
+				for (var key in source){
+					var record = source[key];
+					record.id = key;
+					result.push(record);
+				}
+			} else {
+				var result = source;
 			}
 
 			webix.ajax.$callback(view, callback, "", result, -1);
 			this._setHandlers(view);
 
+			if (isCollection)
+				this._setAddRemove(view);
+			else
+				this._addSaveMethod(view);
+
 		}, this));
 	},
+	_addSaveMethod:function(view){
+		var proxy = this;
+		view.save = function(){
+			var values = this.getDirtyValues();
+			this.setDirty(false);
+			proxy.collection.update(values);
+		};
+	},
 	_setHandlers:function(view){
-
 		//after initial data loading, set listeners for changes
 		//data in firebase updated
 		this.collection.on("child_changed", function(data){
 			//event triggered by data saving in the same component
 			if (view.firebase_saving) return;
+			var isCollection = !!view.exists;
 
-			var obj = data.val();
-			obj.id = data.key;
+			if (isCollection){
+				var obj = data.val();
+				obj.id = data.key;
 
-			//do not trigger data saving events
-			webix.dp(view).ignore(function(){
-				view.updateItem(obj.id, obj);
-			});
+				//do not trigger data saving events
+				webix.dp(view).ignore(function(){
+					view.updateItem(obj.id, obj);
+				});
+			} else {
+				if (view.setValues){
+					var update = {}
+					update[data.key] = data.val();
+					return view.setValues(update, true);
+				}
+			}
 		});
+	},
 
+	_setAddRemove:function(view){
 		//data in firebase added
 		this.collection.on("child_added", function(data){
 			//event triggered by data saving in the same component
