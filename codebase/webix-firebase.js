@@ -28,6 +28,9 @@ webix.proxy.firebase = {
 				var result = [];
 				for (var key in source){
 					var record = source[key];
+					//convert simple string types to data objects
+					if (typeof record !== "object")
+						record = { value : record };
 					record.id = key;
 					result.push(record);
 				}
