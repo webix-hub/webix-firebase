@@ -1,0 +1,68 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="../../core/codebase/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+	<title>Firebase and Webix Datatable - complex options in form and in datatable</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/"
+	});
+
+	//create firebase connection, and assign it to webix
+	webix.firebase = firebase.database();
+
+	//datatable
+	var table = {
+		view:"datatable",
+		id:"dtable", select:true, multiselect:true,
+		editable:true, editaction:"dblclick",
+		columns:[{
+			id:"name", header:"Text Editor", editor:"text", fillspace:1
+		},{
+			id:"select2", header:"Select editor", editor:"richselect", template:function(obj, common, value, column){
+				return column.collection.getItem(value).code;
+			}, 
+			options:"firebase->options2", 
+			suggest:{
+				body:{
+					template:"#code#"
+				}
+			}
+		}],
+		//load data from /books
+		url: "firebase->books",
+		//save data to /books
+		save:"firebase->books"
+	};
+
+	var toolbar = {
+		view:"toolbar",
+		elements:[
+			{ view:"label", label:"Dbl-Click to edit any row"},
+			{ view:"richselect", label:"Use-less select control", width:320, labelWidth:200, suggest:{
+				body:{
+					url:"firebase->options2",
+					template:"#code#"
+				}
+			}}
+		]
+	}
+	webix.ui({
+		rows:[toolbar, table]
+	});
+
+
+	</script>
+</body>
+</html>
