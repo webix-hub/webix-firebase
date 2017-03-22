@@ -1,7 +1,7 @@
 <html>
 <head>
 	<!-- Webix -->
-	<script type="text/javascript" src="../../core/codebase/webix.js"></script>
+	<script type="text/javascript" src="http://cdn.webix.com/site/webix.js"></script>
 	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
 	<!-- Webix-Firebase adapter -->
 	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
@@ -23,6 +23,13 @@
 	webix.firebase = firebase.database();
 
 	//datatable
+	var options = new webix.DataCollection({
+		map:{
+			value:"#code#"
+		},
+		url:"firebase->options2"
+	});
+
 	var table = {
 		view:"datatable",
 		id:"dtable", select:true, multiselect:true,
@@ -30,10 +37,10 @@
 		columns:[{
 			id:"name", header:"Text Editor", editor:"text", fillspace:1
 		},{
-			id:"select2", header:"Select editor", editor:"richselect", template:function(obj, common, value, column){
-				return column.collection.getItem(value).code;
-			}, 
-			options:"firebase->options2", 
+			id:"select2", 
+			header:["Options", { content: "richSelectFilter" }],
+			editor:"richselect", 
+			collection:options, 
 			suggest:{
 				body:{
 					template:"#code#"

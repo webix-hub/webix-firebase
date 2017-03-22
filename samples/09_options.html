@@ -1,7 +1,7 @@
 <html>
 <head>
 	<!-- Webix -->
-	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<script type="text/javascript" src="http://cdn.webix.com/site/webix.js"></script>
 	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
 	<!-- Webix-Firebase adapter -->
 	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
@@ -30,7 +30,7 @@
 		columns:[{
 			id:"name", header:"Text Editor", editor:"text", fillspace:1
 		},{
-			id:"select", header:"Select editor", editor:"richselect", options:"firebase->options"
+			id:"select", header:["Options", { content: "richSelectFilter" }], editor:"richselect", options:"firebase->options"
 		}],
 		//load data from /books
 		url: "firebase->books",
@@ -44,7 +44,8 @@
 			{ view:"label", label:"Dbl-Click to edit any row"},
 			{ view:"richselect", label:"Use-less select control", width:320, labelWidth:200, options:"firebase->options" }
 		]
-	}
+	};
+
 	webix.ui({
 		rows:[toolbar, table]
 	});
