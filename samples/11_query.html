@@ -1,0 +1,67 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+
+	<title>Firebase and Webix Datatable - using Query</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/"
+	});
+
+	//create firebase connection, and assign it to webix
+	webix.firebase = firebase.database();
+	var books = webix.firebase.ref("books");
+	var sorted_books = books.orderByChild("name");
+	
+	//datatable
+	var table = {
+		view:"datatable",
+		id:"dtable", select:true, multiselect:true,
+		editable:true, editaction:"dblclick",
+		columns:[{
+			id:"name", editor:"text", fillspace:1
+		},{
+			id:"author", editor:"text", fillspace:1
+		}],
+		//load data from /books
+		url: webix.proxy("firebase", sorted_books),
+		//save data to /books
+		save: webix.proxy("firebase", books)
+	};
+
+	var toolbar = {
+		view:"toolbar",
+		elements:[
+			{ view:"label", label:"Dbl-Click to edit any row"},
+			{ view:"button", value:"Add", width:100, click:function(){
+				var row = $$("dtable").add({ name:"", author:"" });
+				$$("dtable").editCell(row, "name")
+			}},
+			{ view:"button", value:"Remove", width:100, click:function(){
+				var id = $$("dtable").getSelectedId();
+				if (id)
+					$$("dtable").remove(id);
+				else
+					webix.message("Please select any row first");
+			}}
+		]
+	}
+	webix.ui({
+		rows:[toolbar, table]
+	});
+
+
+	</script>
+</body>
+</html>

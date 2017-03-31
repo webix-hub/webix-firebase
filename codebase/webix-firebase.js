@@ -21,21 +21,23 @@ webix.proxy.firebase = {
 
 		//full data loading - do only once, during first loading
 		this.collection.once("value", webix.bind(function(data){
-			var source = data.val();
 			var isCollection = !!view.exists;
 
 			if (isCollection){
 				var result = [];
-				for (var key in source){
-					var record = source[key];
+				//preserve data order
+				data.forEach(function(child){
+					var record = child.val();
+
 					//convert simple string types to data objects
 					if (typeof record !== "object")
 						record = { value : record };
-					record.id = key;
+
+					record.id = child.key;
 					result.push(record);
-				}
+				});
 			} else {
-				var result = source;
+				var result = data.val();
 			}
 
 			webix.ajax.$callback(view, callback, "", result, -1);
