@@ -1,0 +1,69 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firebase.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-storage.js"></script>
+
+	<title>Firebase and Webix Datatable - File Upload</title>
+</head>
+<body>
+	<div id="uploader_container" style="width: 500px; height: 200px; margin: 40px;"></div>
+	<script type="text/javascript" charset="utf-8">
+
+	firebase.initializeApp({
+		databaseURL: "https://webix-demo.firebaseio.com/",
+		storageBucket: "gs://webix-demo.appspot.com/"
+	});
+
+	//create firebase connection, and assign it to webix
+	var storage = firebase.storage().ref();
+
+	webix.ready(function() {
+		webix.ui({
+			container:"uploader_container",
+			view:"form", rows: [
+				{ 
+					view: "uploader", value: 'Upload file', 
+					name:"files",
+					link:"mylist", 
+					on:{
+						onAfterFileAdd:function(item){
+							var files = this.files;
+							var name = "upload/"+item.name;
+
+							item.status = 'transfer';
+							var task = storage.child(name).put(item.file);
+							task.on("state_changed", function(state){
+								if (state.totalBytes){
+									var percent = Math.round(100*state.bytesTransferred / state.totalBytes);
+									files.updateItem(item.id, { percent: percent });
+								}
+							});
+							task.then(function(){
+								files.updateItem(item.id, { status: "server", progress:100, name:name });
+							});
+						}
+					}
+				},
+				{
+				 	view:"list",  id:"mylist", type:"uploader",
+					autoheight:true, borderless:true
+				},
+				{ view: "button", label: "Get value", click: function() {
+					var text = this.getParentView().getValues();
+					text = JSON.stringify(text, "\n");
+					webix.message("<pre>"+text+"</pre>");
+				}}
+			]
+		});
+	});
+	</script>
+</body>
+</html>
