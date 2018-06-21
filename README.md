@@ -12,8 +12,101 @@ When data changes, apps built with Firebase update instantly across every device
 Firebase-powered apps work offline. Data is synchronized instantly when your app regains connectivity.
 
 
-How to use
------------
+Firestore
+-----------------
+
+Include Webix and Firebase files on the page
+
+```html
+<!-- Webix -->
+<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+<!-- Webix-Firebase adapter -->
+<script type="text/javascript" src="../codebase/webix-firestore.js"></script>
+<!-- FireBase -->
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+```
+
+Create main firebase connection
+
+```js
+firebase.initializeApp({
+	apiKey: "YOU API KEY HERE",
+	projectId: "webix-demo"
+});
+
+// create firebase connection, and assign it to webix
+var db = firebase.firestore();
+db.settings({ timestampsInSnapshots:true });
+
+webix.firestore = db;
+```
+
+Init webix component, using "firebase->{reference}" as data url
+
+```js
+webix.ui({
+	id:"dtable",
+	view:"datatable",
+	autoConfig:true,
+
+	// load data from "books" collection
+	url: "firestore->books",
+	// save data to "books" collection
+	save:"firestore->books"
+}
+```	
+
+That is it.
+
+Adding "url" property will enable data loading and automatic updates of component when data changed in the firebase. 
+
+Adding "save" property ensures that all changes in the datatable will be saved to the Firebase
+
+### Using FireBase references
+
+Instead of using text url you can use firestore collections directly 
+
+```js
+firebase.initializeApp({
+	apiKey: "YOU API KEY HERE",
+	projectId: "webix-demo"
+});
+
+// create firebase connection, and assign it to webix
+var db = firebase.firestore();
+db.settings({ timestampsInSnapshots:true });
+
+var proxy = webix.proxy("firestore", db.collection("books"));
+
+webix.ui({
+	view:"list",
+	url: proxy,
+	save: proxy
+}););
+```
+
+
+### Dynamic data loading
+
+You can use "load" command to (re)load data in the component. 
+
+```js
+$$("dtable").clearAll();
+$$("dtable").load("firestore->books");
+```
+
+or
+
+```js
+$$("dtable").clearAll();
+$$("dtable").load( webix.proxy("firestore", collection) );
+```
+
+
+Realtime Database
+------------------
 
 Include Webix and Firebase files on the page
 
@@ -24,10 +117,8 @@ Include Webix and Firebase files on the page
 <!-- Webix-Firebase adapter -->
 <script type="text/javascript" src="../codebase/webix-firebase.js"></script>
 <!-- FireBase -->
-<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/3.6.2/firebase-database.js"></script>
-
-
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-database.js"></script>
 ```
 
 Create main firebase connection
@@ -37,7 +128,7 @@ firebase.initializeApp({
   databaseURL: "https://webix-demo.firebaseio.com/"
 });
 
-//create firebase connection, and assign it to webix
+// create firebase connection, and assign it to webix
 webix.firebase = firebase.database();
 ```
 
@@ -54,9 +145,9 @@ webix.ui({
 		id:"author", editor:"text", fillspace:1
 	}],
 
-	//load data from /books
+	// load data from /books
 	url: "firebase->books",
-	//save data to /books
+	// save data to /books
 	save:"firebase->books"
 }
 ```	
@@ -84,7 +175,7 @@ webix.ui({
 	view:"list",
 	url: proxy,
 	save: proxy
-}
+});
 ```
 
 
@@ -93,13 +184,15 @@ webix.ui({
 You can use "load" command to (re)load data in the component. 
 
 ```js
+$$("dtable").clearAll();
 $$("dtable").load("firebase->books");
 ```
 
 or
 
 ```js
-$$("dtable").load( webix.proxy("firebase", ref);
+$$("dtable").clearAll();
+$$("dtable").load( webix.proxy("firebase", ref) );
 ```
 
 

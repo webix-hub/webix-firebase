@@ -1,0 +1,69 @@
+<html>
+<head>
+	<!-- Webix -->
+	<script type="text/javascript" src="http://cdn.webix.com/edge/webix.js"></script>
+	<link rel="stylesheet" type="text/css" href="http://cdn.webix.com/edge/webix.css">
+	<!-- Webix-Firebase adapter -->
+	<script type="text/javascript" src="../codebase/webix-firestore.js"></script>
+
+	<!-- FireBase -->
+	<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/5.0.4/firebase-firestore.js"></script>
+
+	<title>Firebase and Webix Datatable - saving and loading by url</title>
+</head>
+<body>
+	<script type="text/javascript">
+
+	firebase.initializeApp({
+		apiKey: "AIzaSyDG1D5Jy8_dSnLb5ZX2ietvYwKzubxJxx4",
+    	projectId: "webix-demo"
+	});
+
+	//create firebase connection, and assign it to webix
+	var db = firebase.firestore();
+	db.settings({ timestampsInSnapshots:true });
+
+	var proxy = webix.proxy("firestore", db.collection("books"));
+
+	//datatable
+	var table = {
+		view:"datatable",
+		id:"dtable", select:true, multiselect:true,
+		editable:true, editaction:"dblclick",
+		columns:[{
+			id:"name", editor:"text", fillspace:1
+		},{
+			id:"author", editor:"text", fillspace:1
+		}],
+		//load data from /books
+		url: proxy,
+		//save data to /books
+		save: proxy
+	};
+
+	var toolbar = {
+		view:"toolbar",
+		elements:[
+			{ view:"label", label:"Dbl-Click to edit any row"},
+			{ view:"button", value:"Add", width:100, click:function(){
+				var row = $$("dtable").add({ name:"", author:"" });
+				$$("dtable").editCell(row, "name")
+			}},
+			{ view:"button", value:"Remove", width:100, click:function(){
+				var id = $$("dtable").getSelectedId();
+				if (id)
+					$$("dtable").remove(id);
+				else
+					webix.message("Please select any row first");
+			}}
+		]
+	}
+	webix.ui({
+		rows:[toolbar, table]
+	});
+
+
+	</script>
+</body>
+</html>
