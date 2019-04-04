@@ -5,6 +5,8 @@ Firebase adapter for Webix UI
 
 Library allows using [Webix](http://webix.com) components with [FireBase](https://firebase.google.com/)
 
+Latest version will work with Webix 6.2+, if you are using an older version of Webix, you need to use version 0.5 of this package.
+
 Citing the Firebase site:
 
 When data changes, apps built with Firebase update instantly across every device -- web or mobile.

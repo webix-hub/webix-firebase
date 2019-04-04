@@ -16,6 +16,7 @@ webix.proxy.firestore = {
 		if (this._unsubscribe){
 			this.release();
 		}
+		var data = webix.promise.defer();
 
 		//decode string reference if necessary
 		if (typeof this.source == "object")
@@ -41,19 +42,21 @@ webix.proxy.firestore = {
 					  case "modified":
 					    view.updateItem(data.id, data);
 					    break;
-					  case "removed":
-					    view.remove(data.id);
+						case "removed":
+							if (view.exists(data.id))
+					    	view.remove(data.id);
 					    break;
 					}
 				});
 
 				//batch adding
 				if (queue.length){
-					// [TODO] support load callback
-					view.parse(queue, "json");
+					data.resolve(queue);
 				}
 			});
-      });
+		});
+		
+		return data;
 	},
 	/*
 	save:"firebase->ref"
@@ -71,34 +74,18 @@ webix.proxy.firestore = {
 
 		if (obj.operation == "update"){
 			//data changed
-			this.collection.doc(obj.id).update(obj.data)
-				.then(function(){
-					callback.success("", {}, -1);
-				})
-				.catch(function(error){
-					callback.error("", null, error);
-				});
+			return this.collection.doc(obj.id).update(obj.data);
 
 		} else if (obj.operation == "insert"){
 			//data added
-			this.collection.add(obj.data)
-				.then(function(a){
-					callback.success("", { id: a.id }, -1);
-				})
-				.catch(function(error){
-					callback.error("", null, error);
-				});
+			return this.collection.add(obj.data);
 			
 		} else if (obj.operation == "delete"){
 			//data removed
-			this.collection.doc(obj.id).delete()
-				.then(function(){
-					callback.success("", {}, -1);
-				})
-				.catch(function(error){
-					callback.error("", null, error);
-				});
+			return this.collection.doc(obj.id).delete();
 		}
+		
+		return webix.promise.reject();
 	},
 	release(){
 		if (this._unsubscribe){

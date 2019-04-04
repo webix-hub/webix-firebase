@@ -19,14 +19,16 @@ webix.proxy.firebase = {
 		else
 			this.collection = this.collection || webix.firebase.ref(this.source);
 
+		var data = webix.promise.defer();
+
 		//full data loading - do only once, during first loading
-		this.collection.once("value", webix.bind(function(data){
+		this.collection.once("value", webix.bind(function(pack){
 			var isCollection = !!view.exists;
 
 			if (isCollection){
 				var result = [];
 				//preserve data order
-				data.forEach(function(child){
+				pack.forEach(function(child){
 					var record = child.val();
 
 					//convert simple string types to data objects
@@ -37,10 +39,10 @@ webix.proxy.firebase = {
 					result.push(record);
 				});
 			} else {
-				var result = data.val();
+				var result = pack.val();
 			}
 
-			webix.ajax.$callback(view, callback, "", result, -1);
+			data.resolve(result);
 			this._setHandlers(view);
 
 			if (isCollection)
@@ -49,6 +51,8 @@ webix.proxy.firebase = {
 				this._addSaveMethod(view);
 
 		}, this));
+
+		return data;
 	},
 	_addSaveMethod:function(view){
 		var proxy = this;
@@ -128,37 +132,39 @@ webix.proxy.firebase = {
 
 		//flag to prevent triggering of onchange listeners on the same component
 		view.firebase_saving = true;
+		var result = webix.promise.defer();
 
 		delete obj.data.id;
 		if (obj.operation == "update"){
 			//data changed
 			this.collection.child(obj.id).update(obj.data, function(error){
 				if (error)
-					callback.error("", null, error);
+					result.reject(error);
 				else
-					callback.success("", {}, -1);
+					result.resolve({});
 			});
 
 		} else if (obj.operation == "insert"){
 			//data added
 			var id = this.collection.push(obj.data, function(error){
 				if (error)
-					callback.error("", null, error);
+					result.reject(error);
 				else
-					callback.success("", { newid: id }, -1);
+					result.resolve({ newid: id });
 			}).key;
 			
 		} else if (obj.operation == "delete"){
 			//data removed
 			this.collection.child(obj.id).set(null, function(error){
 				if (error)
-					callback.error("", null, error);
+					result.reject(error);
 				else
-					callback.success("", {}, -1);
+					result.resolve({}, -1);
 			});
 		}
 
 		view.firebase_saving = false;
+		return result;
 	}
 };
 
